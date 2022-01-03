@@ -45,7 +45,7 @@ client.commandManager.registerCommandErrorHandler((err, msg) => {
 client.on("ready", () => {
   console.log(client.user?.username, "is ready!");
 
-  EventUpdate.run(1);
+  EventUpdate.run(10);
 })
 client.on("messageCreate", msg => client.commandManager.handleMessage(msg));
 
