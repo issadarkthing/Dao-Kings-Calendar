@@ -1,0 +1,14 @@
+{
+  "0 debug pnpm:scope": {
+    "selected": 1
+  },
+  "1 error pnpm": {
+    "code": "ERR_PNPM_SERVER_MANIFEST_LOCKED",
+    "err": {
+      "name": "pnpm",
+      "message": "Canceling startup of server (pid 20994) because another process got exclusive access to server.json",
+      "code": "ERR_PNPM_SERVER_MANIFEST_LOCKED",
+      "stack": "pnpm: Canceling startup of server (pid 20994) because another process got exclusive access to server.json\n    at exports2.default (/home/terra/.npm-global/lib/node_modules/pnpm/dist/pnpm.cjs:180113:15)\n    at async /home/terra/.npm-global/lib/node_modules/pnpm/dist/pnpm.cjs:183737:21\n    at async run (/home/terra/.npm-global/lib/node_modules/pnpm/dist/pnpm.cjs:183711:34)\n    at async runPnpm (/home/terra/.npm-global/lib/node_modules/pnpm/dist/pnpm.cjs:183922:5)\n    at async /home/terra/.npm-global/lib/node_modules/pnpm/dist/pnpm.cjs:183914:7"
+    }
+  }
+}

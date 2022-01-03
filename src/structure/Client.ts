@@ -4,5 +4,6 @@ import Enmap from "enmap";
 
 export class Client extends DiscordClient {
   players = new Enmap("Player");
+  events = new Enmap("Event");
   commandManager = new CommandManager(process.env.PREFIX || "!");
 }
