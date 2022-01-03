@@ -6,6 +6,7 @@ export default class extends Command {
   name = "profile";
   description = "show profile";
   aliases = ["p"];
+  disable = true;
 
   async exec(msg: Message) {
 

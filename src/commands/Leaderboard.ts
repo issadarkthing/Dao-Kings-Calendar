@@ -7,6 +7,7 @@ export default class extends Command {
   name = "leaderboard";
   aliases = ["l"];
   description = "show leaderboard of rich players";
+  disable = true;
 
   exec(msg: Message) {
 
