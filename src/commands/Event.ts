@@ -13,7 +13,7 @@ export default class extends Command {
   async exec(msg: Message, args: string[]) {
 
     const prompt = new Prompt(msg);
-    const settings = new Settings();
+    const settings = new Settings(msg.guildId!);
     const [arg1, arg2] = args;
 
     let eventID: null | number = null;
@@ -135,27 +135,22 @@ export default class extends Command {
 
     if (confirmation === "y") {
 
+      const messages = (eventChannel as BaseGuildTextChannel).messages;
+      await messages.fetch();
+
+      const message = messages.cache.get(event.messageID!);
+
       // if event already exists
-      if (eventID) {
+      if (eventID && message) {
         
-        const messages = (eventChannel as BaseGuildTextChannel).messages;
-        await messages.fetch();
-
-        const message = messages.cache.get(event.messageID!);
-
-        if (message) {
-          message.edit({ embeds: [event.show()] });
-          msg.channel.send(`Successfully updated ${name} event`);
-        } else {
-          const post = await (eventChannel as TextChannel).send({ embeds: [event.show()] });
-          msg.channel.send(`Successfully updated ${name} event`);
-          event.messageID = post.id;
-        }
+        message.edit({ embeds: [event.show()] });
+        msg.channel.send(`Successfully updated ${name} event`);
 
       } else {
         const post = await (eventChannel as TextChannel).send({ embeds: [event.show()] });
         msg.channel.send(`Successfully created ${name} event`);
         event.messageID = post.id;
+        event.guildID = post.guildId!;
       }
 
       event.save();

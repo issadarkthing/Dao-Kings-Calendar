@@ -1,11 +1,11 @@
 import { client } from "..";
 
-
 export class Settings {
-  id = "a";
+  id: string;
   eventChannel = "";
 
-  constructor() {
+  constructor(guildID: string) {
+    this.id = guildID;
     const data = client.settings.get(this.id);
 
     if (data) {
