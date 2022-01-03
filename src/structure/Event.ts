@@ -33,9 +33,10 @@ export class Event {
       .setColor("RANDOM")
       .setTitle(this.name)
       .setDescription(this.description || "")
+      .addField("ID", this.id.toString(), true)
       .addField("Date", this.date.toLocaleString(DateTime.DATE_SHORT), true)
       .addField("Time", this.date.toLocaleString(DateTime.TIME_SIMPLE), true)
-      .setTimestamp(this.date.toJSDate())
+      .addField("Time Left", this.timeLeft())
 
     return embed;
   }
