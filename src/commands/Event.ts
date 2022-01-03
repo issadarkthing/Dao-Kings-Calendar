@@ -1,18 +1,37 @@
 import { Command } from "@jiman24/commandment";
-import { Message, TextChannel } from "discord.js";
+import { BaseGuildTextChannel, Message, TextChannel } from "discord.js";
 import { Prompt } from "@jiman24/discordjs-prompt";
 import { DateTime } from "luxon";
 import { Event } from "../structure/Event";
 import { Settings } from "../structure/Settings";
 import { oneLine } from "common-tags";
+import { client } from "..";
 
 export default class extends Command {
   name = "event";
 
-  async exec(msg: Message) {
+  async exec(msg: Message, args: string[]) {
 
     const prompt = new Prompt(msg);
     const settings = new Settings();
+    const [arg1, arg2] = args;
+
+    let eventID: null | number = null;
+
+    if (arg1 === "edit") {
+
+      if (!arg2) {
+        throw new Error("you need to specify event id");
+      }
+
+      const event = client.events.get(parseInt(arg2));
+
+      if (!event) {
+        throw new Error(`no event with id: ${arg2}`);
+      }
+
+      eventID = event.id;
+    }
 
     if (!settings.eventChannel) {
 
@@ -79,11 +98,25 @@ export default class extends Command {
 
     date = date.set({ hour: time.hour, minute: time.minute });
 
-    const event = new Event({ date, name, description });
+    const eventOpts = { date, name, description };
+
+    if (eventID) {
+      Object.assign(eventOpts, { id: eventID });
+    }
+
+    let event = new Event({ date, name, description });
     const timeLeft = event.timeLeft();
 
     if (date.diffNow("seconds").seconds < 0) {
       throw new Error("cannot create event for the past");
+    }
+
+    if (eventID) {
+      event = Event.fromID(eventID);
+
+      event.name = name;
+      event.date = date;
+      event.description = description;
     }
 
     msg.channel.send({ embeds: [event.show()] });
@@ -100,11 +133,32 @@ export default class extends Command {
       throw new Error(`cannot find event channel`);
     }
 
-    (eventChannel as TextChannel).send({ embeds: [event.show()] });
-
     if (confirmation === "y") {
 
-      msg.channel.send(`Successfully created ${name} event`);
+      // if event already exists
+      if (eventID) {
+        
+        const messages = (eventChannel as BaseGuildTextChannel).messages;
+        await messages.fetch();
+
+        const message = messages.cache.get(event.messageID!);
+
+        if (message) {
+          message.edit({ embeds: [event.show()] });
+          msg.channel.send(`Successfully updated ${name} event`);
+        } else {
+          const post = await (eventChannel as TextChannel).send({ embeds: [event.show()] });
+          msg.channel.send(`Successfully updated ${name} event`);
+          event.messageID = post.id;
+        }
+
+      } else {
+        const post = await (eventChannel as TextChannel).send({ embeds: [event.show()] });
+        msg.channel.send(`Successfully created ${name} event`);
+        event.messageID = post.id;
+      }
+
+      event.save();
 
     } else if (confirmation === "n") {
       throw new Error("operation cancelled");

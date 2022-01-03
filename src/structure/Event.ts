@@ -3,20 +3,23 @@ import { DateTime } from "luxon";
 import { client } from "..";
 
 interface EventOptions {
+  id?: number;
   name: string;
   description?: string;
   date: DateTime;
 }
 
 export class Event {
-  id = client.events.autonum;
+  id: number;
   static dateFormat = "MM/dd/yyyy";
   static timeFormat = "t";
   name: string;
   description?: string;
+  messageID?: string;
   date: DateTime;
 
   constructor(opts: EventOptions) {
+    this.id = opts.id || client.events.autonum;
     this.name = opts.name;
     this.description = opts.description;
     this.date = opts.date;
@@ -26,6 +29,14 @@ export class Event {
     return this.date
       .diffNow(["days", "hours", "minutes"])
       .toFormat("**d** 'days' **h** 'hours' **m** 'minutes'");
+  }
+
+  static fromID(id: number) {
+    const data = client.events.get(id);
+    const event = new Event(data);
+
+    Object.assign(event, data);
+    return event;
   }
 
   show() {
