@@ -24,8 +24,8 @@ export class Event {
 
   timeLeft() {
     return this.date
-      .diffNow(["days", "hours", "minutes", "seconds"])
-      .toFormat("**d** 'days' **h** 'hours' **m** 'minutes' **s** 'seconds'");
+      .diffNow(["days", "hours", "minutes"])
+      .toFormat("**d** 'days' **h** 'hours' **m** 'minutes'");
   }
 
   show() {
