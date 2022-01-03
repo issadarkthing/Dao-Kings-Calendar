@@ -44,7 +44,7 @@ export default class extends Command {
 
       if (!channel) {
         throw new Error("no channel was mentioned");
-      } else if (channel instanceof TextChannel) {
+      } else if (!channel["send"]) {
         throw new Error(`${channel} is not text based channel`);
       }
 

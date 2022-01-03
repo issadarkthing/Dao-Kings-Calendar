@@ -2,6 +2,7 @@ import { Client } from "./structure/Client";
 import path from "path";
 import { config } from "dotenv";
 import { DateTime } from "luxon";
+import { EventUpdate } from "./structure/Event";
 
 config();
 
@@ -41,7 +42,11 @@ client.commandManager.registerCommandErrorHandler((err, msg) => {
   msg.channel.send((err as Error).message);
 })
 
-client.on("ready", () => console.log(client.user?.username, "is ready!"))
+client.on("ready", () => {
+  console.log(client.user?.username, "is ready!");
+
+  EventUpdate.run(1);
+})
 client.on("messageCreate", msg => client.commandManager.handleMessage(msg));
 
 client.login(process.env.BOT_TOKEN);

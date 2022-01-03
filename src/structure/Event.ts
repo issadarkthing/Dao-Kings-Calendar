@@ -1,6 +1,7 @@
-import { MessageEmbed } from "discord.js";
+import { Client, MessageEmbed, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
 import { client } from "..";
+import { Settings } from "./Settings";
 
 interface EventOptions {
   id?: number;
@@ -15,6 +16,7 @@ export class Event {
   static timeFormat = "t";
   name: string;
   description?: string;
+  guildID?: string;
   messageID?: string;
   date: DateTime;
 
@@ -36,7 +38,13 @@ export class Event {
     const event = new Event(data);
 
     Object.assign(event, data);
+    event.date = DateTime.fromJSDate(data.date);
+
     return event;
+  }
+
+  hasPassed() {
+    return this.date.diffNow(["seconds"]).seconds <= 0;
   }
 
   show() {
@@ -58,3 +66,38 @@ export class Event {
   }
 }
 
+export class EventUpdate {
+
+  static async update() {
+    for (const id of client.events.keys()) {
+      const event = Event.fromID(id as number);
+      const guild = client.guilds.cache.get(event.guildID!);
+
+      if (!guild) continue;
+
+      const settings = new Settings(guild.id);
+      const channel = await guild.channels.fetch(settings.eventChannel);
+
+      if (!channel || !(channel instanceof TextChannel)) continue;
+
+      await channel.messages.fetch();
+      const message = channel.messages.cache.get(event.messageID!);
+
+      if (!event.hasPassed() && message) {
+        message.edit({ embeds: [event.show()] });
+      } else {
+        channel.send({ embeds: [event.show()] });
+      }
+    }
+  }
+
+  // runs update every x minutes
+  static run(interval: number) {
+
+    setInterval(() => {
+
+      this.update();
+
+    }, 1000 * 60 * interval)
+  }
+}
