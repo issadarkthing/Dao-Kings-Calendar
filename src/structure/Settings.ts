@@ -3,7 +3,7 @@ import { client } from "..";
 
 export class Settings {
   id = "a";
-  channel = "";
+  eventChannel = "";
 
   constructor() {
     const data = client.settings.get(this.id);
