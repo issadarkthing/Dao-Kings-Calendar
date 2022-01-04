@@ -33,7 +33,6 @@ export default class extends Command {
   name = "hunt";
   description = "start hunting";
   block = true;
-  disable = true;
 
   async exec(msg: Message) {
 

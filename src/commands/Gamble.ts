@@ -8,7 +8,6 @@ export default class extends Command {
   description = "slot machine game";
   symbols = ["🔵", "🔴", "⚪"];
   throttle = 60 * 1000;
-  disable = true;
 
   private allEqual(arr: string[]) {
     return arr.every(x => x === arr[0]);

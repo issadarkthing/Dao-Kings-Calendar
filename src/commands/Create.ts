@@ -7,7 +7,6 @@ import { Player } from "../structure/Player";
 export default class extends Command {
   name = "create";
   description = "create new character";
-  disable = true;
 
   async exec(msg: Message) {
 

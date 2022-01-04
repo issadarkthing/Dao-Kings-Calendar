@@ -9,6 +9,7 @@ import { client } from "..";
 
 export default class extends Command {
   name = "event";
+  description = "create an event";
 
   async exec(msg: Message, args: string[]) {
 

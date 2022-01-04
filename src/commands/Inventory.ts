@@ -15,7 +15,6 @@ export default class extends Command {
   aliases = ["i", "inv"];
   maxArmor = 4; // max equipped armor
   maxWeapon = 2; // max equipped weapon
-  disable = true;
 
   async exec(msg: Message, args: string[]) {
 
