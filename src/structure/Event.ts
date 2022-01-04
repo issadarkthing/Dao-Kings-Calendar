@@ -1,4 +1,4 @@
-import { Client, MessageEmbed, TextChannel } from "discord.js";
+import { MessageEmbed, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
 import { client } from "..";
 import { Settings } from "./Settings";
@@ -18,6 +18,7 @@ export class Event {
   description?: string;
   guildID?: string;
   messageID?: string;
+  ended = false;
   date: DateTime;
 
   constructor(opts: EventOptions) {
@@ -48,6 +49,8 @@ export class Event {
   }
 
   show() {
+    const timeLeft = this.ended ? "This event has ended" : this.timeLeft();
+
     const embed = new MessageEmbed()
       .setColor("RANDOM")
       .setTitle(this.name)
@@ -55,7 +58,7 @@ export class Event {
       .addField("ID", this.id.toString(), true)
       .addField("Date", this.date.toLocaleString(DateTime.DATE_SHORT), true)
       .addField("Time", this.date.toLocaleString(DateTime.TIME_SIMPLE), true)
-      .addField("Time Left", this.timeLeft())
+      .addField("Time Left", timeLeft)
 
     return embed;
   }
@@ -79,14 +82,21 @@ export class EventUpdate {
       const channel = await guild.channels.fetch(settings.eventChannel);
 
       if (!channel || !(channel instanceof TextChannel)) continue;
+      if (event.ended) continue;
 
       await channel.messages.fetch();
       const message = channel.messages.cache.get(event.messageID!);
 
-      if (!event.hasPassed() && message) {
+      if (message) {
         message.edit({ embeds: [event.show()] });
       } else {
         channel.send({ embeds: [event.show()] });
+      }
+
+      if (event.hasPassed() && !event.ended) {
+
+        event.ended = true;
+        event.save();
       }
     }
   }

@@ -18,6 +18,30 @@ export default class extends Command {
 
     let eventID: null | number = null;
 
+    if (arg1 === "delete") {
+
+      const event = client.events.get(parseInt(arg2));
+
+      if (!event) {
+        throw new Error(`no event with id: ${arg2}`);
+      }
+
+      const guild = msg.guild!;
+      guild.channels.fetch();
+
+      const eventChannel = guild.channels.cache.get(settings.eventChannel);
+      const messages = (eventChannel as BaseGuildTextChannel).messages;
+      await messages.fetch();
+
+      const message = messages.cache.get(event.messageID!);
+      client.events.delete(event.id);
+
+      message?.delete();
+      msg.channel.send(`Successfully deleted ${event.name}`);
+
+      return;
+    }
+
     if (arg1 === "edit") {
 
       if (!arg2) {
